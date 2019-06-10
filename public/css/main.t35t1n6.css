@@ -1,0 +1,18 @@
+/* TESTING DUMMY FILE WITH DUMMY HASH */
+/* 
+when build, all the files will be bundled, all static files (css, js?) will be hashed
+by using some tool (such as GULP, WEBPACK, etc.) and embeded/inserted in the index.html
+since index.html is 'no-cache', it will detect everytime these static files (css,etc) have change
+which will automatically update the index.html with the latest static files content eventhough 
+the static files are set with 'Cache-Control: max-age=100000000' (for example)
+ */
+
+/* 
+you can sort of emulate this by changing 'main.css' with this 'main.t35t1n6.css' (the dummy hashed static file).
+to emulate the static files build with hash
+REFERENCE: https://www.youtube.com/watch?v=_QeNLrkPvdI
+ */
+
+ body {
+     background-color: orange;
+ }
