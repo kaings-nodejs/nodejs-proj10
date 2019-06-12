@@ -1,4 +1,5 @@
 const Product = require('../models/product');
+const { validationResult } = require('express-validator/check');
 
 exports.getAddProduct = (req, res, next) => {
   res.render('admin/edit-product', {
@@ -10,13 +11,17 @@ exports.getAddProduct = (req, res, next) => {
 
 exports.postAddProduct = (req, res, next) => {
   const title = req.body.title;
-  const imageUrl = req.body.image;
+  const imageUrl = req.file;
   const price = req.body.price;
   const description = req.body.description;
   // const userId = req.user._id;   // to get the user id info. This line is same as one line below it
   const userId = req.user;    // mongoose automatically only extract the user id info since the schema only states so
 
   console.log('postAddProduct_image..... ', imageUrl);
+
+  if(!validationResult(req).isEmpty()) {
+    return res.redirect('/products');
+  }
 
   const product = new Product({
     title: title,

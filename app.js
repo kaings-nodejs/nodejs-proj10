@@ -7,6 +7,7 @@ const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const csrf = require('csurf');
 const flash = require('connect-flash');
+const multer = require('multer');
 
 const errorController = require('./controllers/error');
 const User = require('./models/user');
@@ -38,6 +39,7 @@ const options = {
 };
 
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(multer().single('image'));  // since we upload single file therefore 'single'. 'image' is because the 'name' of input file is 'image'
 app.use(express.static(path.join(__dirname, 'public'), options));
 app.use(
     session({ 
