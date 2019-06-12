@@ -39,7 +39,7 @@ const options = {
 };
 
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(multer().single('image'));  // since we upload single file therefore 'single'. 'image' is because the 'name' of input file is 'image'
+app.use(multer({dest: 'images'}).single('image'));  // since we upload single file therefore 'single'. 'image' is because the 'name' of input file is 'image'
 app.use(express.static(path.join(__dirname, 'public'), options));
 app.use(
     session({ 
