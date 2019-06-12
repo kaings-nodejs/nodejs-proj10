@@ -10,11 +10,13 @@ exports.getAddProduct = (req, res, next) => {
 
 exports.postAddProduct = (req, res, next) => {
   const title = req.body.title;
-  const imageUrl = req.body.imageUrl;
+  const imageUrl = req.body.image;
   const price = req.body.price;
   const description = req.body.description;
   // const userId = req.user._id;   // to get the user id info. This line is same as one line below it
   const userId = req.user;    // mongoose automatically only extract the user id info since the schema only states so
+
+  console.log('postAddProduct_image..... ', imageUrl);
 
   const product = new Product({
     title: title,
