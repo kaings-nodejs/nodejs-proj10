@@ -31,7 +31,16 @@ const fileStorage = multer.diskStorage({
     filename: (req, file, cb) => {
         cb(null, new Date().toISOString() + '-' + file.originalname);
     }
-})
+});
+
+const fileFilter = (req, file, cb) => {
+    // if the mimetype shows image file png, jpg, jpeg ... then accept or else reject
+    if(file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg') {
+        cb(null, true);     // this also passing error will stop the process. since it is null, no error is passed
+    } else {
+        cb(null, false);
+    }
+};
 
 app.set('view engine', 'ejs');
 app.set('views', 'views');
@@ -56,7 +65,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(
     multer({
         //dest: 'images',
-        storage: fileStorage    // to configure more details, use storage. 'storage' is more powerful than 'dest' 
+        storage: fileStorage,    // to configure more details, use storage. 'storage' is more powerful than 'dest' 
+        fileFilter: fileFilter
     })
     .single('image'));  // since we upload single file therefore 'single'. 'image' is because the 'name' of input file is 'image'
 
