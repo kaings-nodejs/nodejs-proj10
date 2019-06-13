@@ -71,6 +71,7 @@ app.use(
     .single('image'));  // since we upload single file therefore 'single'. 'image' is because the 'name' of input file is 'image'
 
 app.use(express.static(path.join(__dirname, 'public'), options));
+app.use('/images', express.static(path.join(__dirname, 'images'), options));   // serve contents of 'images' folder publicly accessible, when the route hits '/images'. '/images' & 'images' are NOT the same
 app.use(
     session({ 
         secret: 'my_secret', 
