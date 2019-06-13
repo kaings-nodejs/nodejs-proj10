@@ -1,5 +1,5 @@
 const Product = require('../models/product');
-const { validationResult } = require('express-validator/check');
+// const { validationResult } = require('express-validator/check');
 
 exports.getAddProduct = (req, res, next) => {
   res.render('admin/edit-product', {
@@ -19,9 +19,9 @@ exports.postAddProduct = (req, res, next) => {
 
   console.log('postAddProduct_image..... ', imageUrl);
 
-  if(!validationResult(req).isEmpty()) {
-    return res.redirect('/products');
-  }
+  // if(!validationResult(req).isEmpty()) {
+  //   return res.redirect('/products');
+  // }
 
   const product = new Product({
     title: title,
