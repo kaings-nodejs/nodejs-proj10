@@ -5,24 +5,35 @@ exports.getAddProduct = (req, res, next) => {
   res.render('admin/edit-product', {
     pageTitle: 'Add Product',
     path: '/admin/add-product',
-    editing: false
+    editing: false,
+    errMessage: ''
   });
 };
 
 exports.postAddProduct = (req, res, next) => {
   const title = req.body.title;
-  const imageUrl = req.file;
+  const image = req.file;
   const price = req.body.price;
   const description = req.body.description;
   // const userId = req.user._id;   // to get the user id info. This line is same as one line below it
   const userId = req.user;    // mongoose automatically only extract the user id info since the schema only states so
 
-  console.log('postAddProduct_image..... ', imageUrl);
+  console.log('postAddProduct_image..... ', image);
 
   // if(!validationResult(req).isEmpty()) {
   //   return res.redirect('/products');
   // }
 
+  if(!image) {
+    return res.status(422).render('admin/edit-product', {
+      pageTitle: 'Add Product',
+      path: '/admin/add-product',
+      editing: false,
+      errMessage: 'Attached File is not an Image!'
+    });
+  }
+
+  const imageUrl = image.path;
   const product = new Product({
     title: title,
     imageUrl: imageUrl,
