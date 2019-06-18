@@ -165,6 +165,11 @@ exports.getInvoice = (req, res, next) => {
       return next(err);
     }
 
+    res.setHeader('Content-Type', 'application/pdf');   // set the extension of the file 'pdf'
+    // res.setHeader('Content-Disposition', 'inline');   // open the pdf in same tab
+    // res.setHeader('Content-Disposition', 'attachment');   // open download dialog box or download the pdf file directly (with random hashed filename)
+    res.setHeader('Content-Disposition', `attachment; filename="${invoiceName}"`);   // open download dialog box or download the pdf file directly (with proper defined filename)
+
     res.send(data);
   });
 };
