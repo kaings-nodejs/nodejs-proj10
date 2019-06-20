@@ -157,21 +157,35 @@ exports.getInvoice = (req, res, next) => {
   const orderId = req.params.orderId;
   const invoiceName = 'invoice-' + orderId + '.pdf';
   const invoicePath = path.join('data', 'invoices', invoiceName);
-  
-  fs.readFile(invoicePath, (err, data) => {
-    console.log('getInvoice_data..... ', data);
 
-    if(err) {
-      return next(err);
+  Order.findById(orderId)
+  .then(order => {
+    console.log('getInvoice_order..... ', order);
+    
+    if(order.user.userId.toString() !== req.session.user._id.toString()) {
+      throw new Error('Invalid Order ID!');
     }
 
-    res.setHeader('Content-Type', 'application/pdf');   // set the extension of the file 'pdf'
-    // res.setHeader('Content-Disposition', 'inline');   // open the pdf in same tab
-    // res.setHeader('Content-Disposition', 'attachment');   // open download dialog box or download the pdf file directly (with random hashed filename)
-    res.setHeader('Content-Disposition', `attachment; filename="${invoiceName}"`);   // open download dialog box or download the pdf file directly (with proper defined filename)
-
-    res.send(data);
+    fs.readFile(invoicePath, (err, data) => {
+      console.log('getInvoice_data..... ', data);
+  
+      if(err) {
+        return next(err);
+      }
+  
+      res.setHeader('Content-Type', 'application/pdf');   // set the extension of the file 'pdf'
+      // res.setHeader('Content-Disposition', 'inline');   // open the pdf in same tab
+      // res.setHeader('Content-Disposition', 'attachment');   // open download dialog box or download the pdf file directly (with random hashed filename)
+      res.setHeader('Content-Disposition', `attachment; filename="${invoiceName}"`);   // open download dialog box or download the pdf file directly (with proper defined filename)
+  
+      res.send(data);
+    });
+  })
+  .catch(err => {
+    console.log(err);
+    return next(new Error('catch Error: Invalid Order ID!'))
   });
+  
 };
 
 exports.getCheckout = (req, res, next) => {
