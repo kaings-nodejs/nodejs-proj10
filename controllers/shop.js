@@ -166,20 +166,31 @@ exports.getInvoice = (req, res, next) => {
       throw new Error('Invalid Order ID!');
     }
 
-    fs.readFile(invoicePath, (err, data) => {
-      console.log('getInvoice_data..... ', data);
+    /* 
+    read file like this will read the whole file into memory 
+    (maybe not enough memory for big files if we read file like this) and return it with response. 
+    For big files, it is better to read file by chunks (creadReadStream is the solution) 
+    */ 
+    // fs.readFile(invoicePath, (err, data) => {
+    //   console.log('getInvoice_data..... ', data);
   
-      if(err) {
-        return next(err);
-      }
+    //   if(err) {
+    //     return next(err);
+    //   }
   
-      res.setHeader('Content-Type', 'application/pdf');   // set the extension of the file 'pdf'
-      // res.setHeader('Content-Disposition', 'inline');   // open the pdf in same tab
-      // res.setHeader('Content-Disposition', 'attachment');   // open download dialog box or download the pdf file directly (with random hashed filename)
-      res.setHeader('Content-Disposition', `attachment; filename="${invoiceName}"`);   // open download dialog box or download the pdf file directly (with proper defined filename)
+    //   res.setHeader('Content-Type', 'application/pdf');   // set the extension of the file 'pdf'
+    //   // res.setHeader('Content-Disposition', 'inline');   // open the pdf in same tab
+    //   // res.setHeader('Content-Disposition', 'attachment');   // open download dialog box or download the pdf file directly (with random hashed filename)
+    //   res.setHeader('Content-Disposition', `attachment; filename="${invoiceName}"`);   // open download dialog box or download the pdf file directly (with proper defined filename)
   
-      res.send(data);
-    });
+    //   res.send(data);
+    // });
+
+    const file = fs.createReadStream(invoicePath);  // read data in chunks/stream
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'inline');
+    file.pipe(res);   // pipe the readable stream output into writable stream. response is one of the writable stream object
+
   })
   .catch(err => {
     console.log(err);
