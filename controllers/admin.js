@@ -69,7 +69,8 @@ exports.getEditProduct = (req, res, next) => {
       pageTitle: 'Edit Product',
       path: '/admin/edit-product',
       editing: editMode,
-      product: product
+      product: product,
+      errMessage: ''
     });
   })
   .catch(err => {console.log(err)});
@@ -79,11 +80,22 @@ exports.postEditProduct = (req, res, next) => {
   const prodId = req.body.productId;
   const updatedTitle = req.body.title;
   const updatedPrice = req.body.price;
-  const updatedImageUrl = req.body.imageUrl;
+  const updatedImage = req.file;
   const updatedDesc = req.body.description;
 
   //const product = new Product(updatedTitle, updatedPrice, updatedDesc, updatedImageUrl, prodId);
 
+  if(!updatedImage) {
+    return res.status(422).render('admin/edit-product', {
+      pageTitle: 'Edit Product',
+      path: '/admin/edit-product',
+      editing: editMode,
+      product: product,
+      errMessage: 'Attached File is not an Image!'
+    });
+  }
+
+  const updatedImageUrl = updatedImage.path;
   Product.findById(prodId)
   .then(product => {
     console.log('postEditProduct_product..... ', product);
