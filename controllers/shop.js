@@ -2,6 +2,7 @@ const Product = require('../models/product');
 const Order = require('../models/order');
 const path = require('path');
 const fs = require('fs');
+const PDFDocument = require('pdfkit');
 
 exports.getProducts = (req, res, next) => {
   console.log('shopRoute_getProducts_loggedIn..... ', req.session.isLoggedIn);
@@ -186,11 +187,22 @@ exports.getInvoice = (req, res, next) => {
     //   res.send(data);
     // });
 
-    const file = fs.createReadStream(invoicePath);  // read data in chunks/stream
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', 'inline');
-    file.pipe(res);   // pipe the readable stream output into writable stream. response is one of the writable stream object
+    // const file = fs.createReadStream(invoicePath);  // read data in chunks/stream
+    // res.setHeader('Content-Type', 'application/pdf');
+    // res.setHeader('Content-Disposition', 'inline');
+    // file.pipe(res);   // pipe the readable stream output into writable stream. response is one of the writable stream object
 
+    const pdfDocument = new PDFDocument();   // pdfDocument here is readable stream. Therefore, you can pipe it to writable stream as well
+    
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `inline; filename="${invoiceName}"`);
+
+    pdfDocument.pipe(fs.createWriteStream(invoicePath));  // pipe to writable stream to create PDF document of invoice (invoicePath)
+    pdfDocument.pipe(res);  // and also, pipe it to writable stream of response (to display in the browser)
+
+    pdfDocument.fontSize(20).text('DOCUMENT TITLE', {underline: true});
+    pdfDocument.fontSize(16).text(`TESTING INVOICE - ${invoiceName}`);   // write on the PDF
+    pdfDocument.end();  // to indicate that the writing is done. Therefore, get the blob!
   })
   .catch(err => {
     console.log(err);
