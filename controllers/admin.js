@@ -1,5 +1,6 @@
 const Product = require('../models/product');
 // const { validationResult } = require('express-validator/check');
+const fileHelper = require('../util/file');
 
 exports.getAddProduct = (req, res, next) => {
   res.render('admin/edit-product', {
@@ -95,7 +96,6 @@ exports.postEditProduct = (req, res, next) => {
     });
   }
 
-  const updatedImageUrl = updatedImage.path;
   Product.findById(prodId)
   .then(product => {
     console.log('postEditProduct_product..... ', product);
@@ -104,9 +104,14 @@ exports.postEditProduct = (req, res, next) => {
       return res.redirect('/');
     }
 
+
     product.title = updatedTitle;
     product.price = updatedPrice;
-    product.imageUrl = updatedImageUrl;
+    
+    if (updatedImage) {
+      fileHelper.deleteFile(product.imageUrl);  // to delete previous image before save the new one (overwrite old image file with new one so the number of files will not keep increasing)
+      product.imageUrl = updatedImage.path;
+    }
     product.description = updatedDesc;
     return product.save();
   })
