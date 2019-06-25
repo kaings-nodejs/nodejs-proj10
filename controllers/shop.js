@@ -3,6 +3,7 @@ const Order = require('../models/order');
 const path = require('path');
 const fs = require('fs');
 const PDFDocument = require('pdfkit');
+const ITEMS_PER_PAGE = 2;
 
 exports.getProducts = (req, res, next) => {
   console.log('shopRoute_getProducts_loggedIn..... ', req.session.isLoggedIn);
@@ -37,17 +38,29 @@ exports.getProduct = (req, res, next) => {
 };
 
 exports.getIndex = (req, res, next) => {
+  const page = +req.query.page || 2;  // if query 'page' not found, then set query page=2
+  let totalItems;
+
   Product.find()
-  .then(products => {
-    //console.log(products)
+  .countDocuments()
+  .then((numOfProducts) => {
+    console.log('getIndex_numOfProducts..... ', numOfProducts, 'page..... ', page);
+    totalItems = numOfProducts;
+
+    return Product.find()
+    .skip((2 * page) - ITEMS_PER_PAGE)                // skip the first nth item(s), if '2' meaning skip the first 2 items. So, only show 3rd item onwards up to the limit(if no limit then dispay all)
+    .limit(ITEMS_PER_PAGE); // limit number of item(s), eg. ITEMS_PER_PAGE is 2, meaning only limit to MAX. 2 items is shown
+  })
+  .then((products) => {
     res.render('shop/index', {
       prods: products,
       pageTitle: 'Shop',
-      path: '/'
+      path: '/',
+      numOfPages: Math.ceil(totalItems/ITEMS_PER_PAGE)
     });
   })
   .catch(err => {
-    console.log(err)
+    console.log(err);
   });
 };
 

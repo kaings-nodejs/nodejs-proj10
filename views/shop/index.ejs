@@ -33,5 +33,13 @@
         <% } else { %>
             <h1>No Products Found!</h1>
         <% } %>
+
+        <!-- PAGINATION -->
+        <div class="product__title">
+            <% for (page=1; page <= numOfPages; page++) { %>
+                <span><a href="?page=<%= page %>"><%= page %></a></span>
+            <% } %>
+        </div>
+
     </main>
 <%- include('../includes/end.ejs') %>
